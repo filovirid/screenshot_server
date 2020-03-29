@@ -1,0 +1,42 @@
+html, body {
+    margin: 0;
+    color: #000000;
+}
+
+.header {
+    width: 100%;
+    height: 120px;
+    background-color: lightgray;
+    border-bottom: 2px groove black;
+}
+
+a {
+  color: #009474;
+}
+a:hover, a:active {
+  color: #005946;
+}
+
+#nav ul {
+margin: 0;
+padding: 0;
+list-style-type: none;
+text-align: left;
+background-color: #E9EDEB;
+margin-bottom: 20px;
+border-bottom: 2px groove #333333;
+}
+
+#nav ul li { display: inline; }
+
+#nav ul li a
+{
+text-decoration: none;
+padding: .2em 1em;
+  color: #009474;
+}
+
+#nav ul li a:hover
+{
+  color: #005946;
+}

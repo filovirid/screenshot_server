@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Screenshot API">
+        <meta name="" content="Screenshot API">
+
+        <title>API: Take screenshot from URLs</title>
+
+        <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+        <link href="assets/css/style.css" rel="stylesheet">
+
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/bootstrap.min.js"></script>
+
+        <style>
+            pre {
+                background-color:lightgray;
+                color: black;
+                padding:3px;
+                border-radius:5px;
+                word-wrap: break-word;
+                word-break: break-all;
+                border: 1px solid gray;
+                display: block;
+                margin:2px;
+                padding: 10px;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+            #field_table > tbody > tr > td{
+                border: 1px solid lightgray;
+                padding-top:2px;
+                padding-bottom:2px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="container">  <!-- change style to container-fluid to have fullscreen page  -->
+            <div class="header">
+                <center><h1 style="padding:0px;padding-top:15px;margin:0px;">Screenshot API</h1></center>
+            </div>
+            <div id="nav">
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 id="api-usage">
+                        API Usage
+                    </h1>
+                        Using this API, you are able to take screenshot from
+                        any URL.
+			</h1>
+
+                        
+
+
+                        <p>The API URL is:</p>
+                                    <span style="background-color:lightblue;padding:2px;border:1px solid blue;" >
+                                        https://&lt;domain|localhost&gt;:&lt;port&gt;/api
+                                    </span>
+                            </a>
+                            <br /><br />
+                        <ul style="list-style-type: circle;">
+                            <li><strong>Required parameters of each request are: <i>URL</i>, and <i>token</i>.</strong></li>
+                        </ul>
+                        <h4>Request parameters:</h4>
+                        <ul>
+                            <li><i>URL</i> (required)<br />
+                                <p>The URL address that you want to take the screenshot. The address must start with http:// or https://.</p>
+                            </li>
+                            <li><i>token</i> (required)<br />
+                                <p>The token to pass to API.</p>
+                            </li>
+                            <li>
+                                <i>user_agent</i> (optional)<br />
+                                <p>the User-Agent header you want to send to the target server. The default value is Firefox v69.0 for Linux x86_64. The length of the user_agent parameter
+                                    must be less that 150 characters. If the length is greater than 150, we will truncate it to the first 150 characters.
+                                </p>
+                            </li>
+                        </ul>
+
+
+                    <h3>Requests example</h3>
+
+                    <p>cURL</p>
+                    <p></p>
+<pre>
+curl 'http://&lt;domain|localhost&gt;:&lt;port&gt;/api?url=https://google.com&amp;token=&lt;YOUR TOKEN HERE&gt;'
+</pre>
+                    <p></p>
+
+                    <p>Bash command to save the output image directly to the file (using curl, jq and base64 commands).</p>
+<p></p> 
+<pre> 
+curl 'http://&lt;domain|localhost&gt;:&lt;port&gt;/api?url=http://google.com&token=5d6b091416885eaa91283321b69dc526fc42c97783e4cdfdff7a945e3be1f9ef' | jq '.attr.shot.data' -r | base64 --decode > test.jpg
+</pre>
+<p></p> 
+                   <p>Python 3.x</p>
+                    <p></p>
+<pre>
+import requests
+import base64
+import json
+target_url = 'https://google.com'
+url = "https://&lt;domain|localhost&gt;:&lt;port&gt;/api?url={}&amp;token={}&amp;user_agent={}"
+token = '&lt;YOUR TOKEN HERE&gt;'
+r = requests.get(url.format(target_url,token,"my custom user agent"))
+print(r.status_code)
+#save image to the disk
+r = json.loads(r.text)
+if r.get('success',False) == True:
+    data = base64.decodebytes(r.get('attr').encode())
+    f = open("image.jpg",'wb')
+    f.write(data)
+    f.close()
+    print("Image saved successfully...")
+else:
+    print("The result of the APi was not successfull")<br />
+</pre>
+                    <p></p>
+                    <p>The response of the API <b>always</b> has these fields:</p>
+                    <ul>
+                        <li>success</li>
+                        <li>code</li>
+                        <li>msg</li>
+                        <li>attr</li>
+                    </ul>
+                    <p>Each field has some possible values which explained below:</p>
+                    <h4>success field:</h4>
+                    <ol style="list-style-type: lower-greek;">
+                        <li>true -&gt; The call to the API was successful </li>
+                        <li>false -&gt; The result of the API call was not successful for a reason.</li>
+                    </ol>
+                    <h4>code field:</h4>
+                    <ol style="list-style-type: lower-greek;">
+                        <li>200 -&gt; Successful call</li>
+                        <li>403 -&gt; Not authorized. You are not allowed to call the API, the token reached the limit or the token is not available. </li>
+                        <li>501 -&gt; The <i>url</i> parameter is too long. The length of the URL parameter is greater than 1000.</li>
+                        <li>502 -&gt; The <i>url</i> parameter must start with http:// or https://.</li>
+                        <li>503 -&gt; Unknown Error: Please report this error to the webmaster.</li>
+                    </ol>
+                    <h4>msg field:</h4>
+                    <p>The description of the <i>code</i> field.</p>
+                    <h4>attr field:</h4>
+                    <p>In case of error (code value other that 200), this field is null.</p>
+                    <p>In case of success (code value 200), this field has the following attributes:</p>
+                    <ol style="list-style-type: lower-greek;">
+                        <li> html: HTML source code of the provided URL.</li>
+                        <li> title: Title of the URL page</li>
+                        <li> shot: Screenshot object with the following attributes
+                                <ol style="list-style-type: lower-greek;">
+                                    <li> success: True/False value. If it's False, it means there is no screenshot data.</li>
+                                    <li>data: In case of success True, this field has the base64 encoded screenshot in .JPG format.</li>
+                                </ol>
+                        </li>
+                        <li> destination: The final destination of the URL (this value can help you understand if the requested URL redirected to another page or not.</li>
+                        <li> har: HTTP Archive format (<a href="https://en.wikipedia.org/wiki/HAR_(file_format)" target="_blank">HAR</a>) of the request. This is only available if you have <a href='https://github.com/lightbody/browsermob-proxy' target="_blank">Browsermob-proxy</a> installed. Otherwise, it's an empty object.</li>
+                    </ol>
+                    <p>&nbsp;</p>
+                </div>
+            </div>
+        </div>
+</body></html>
