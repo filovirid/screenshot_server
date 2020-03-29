@@ -23,6 +23,7 @@ docker build -t myimage .
 docker container run --rm -it --user screenshot -p 8000:8086 --name scr_server myimage
 ```
 4. Now you can visit http://localhost:8000 to see the API page and documentation.
+5. If you are installing it on a server (e.g., VPS), use server IP address instead of 'localhost'.
 
 #### Example
 1. Enter the following URL in the browser.
