@@ -33,6 +33,8 @@ http://localhost:8000/api?url=http://google.com&token=5d6b091416885eaa91283321b6
 ```
 
 #### Configuration
-1. After cloning the repo, it's possible to add/remove/edit the default tokens in src/tokens.py
-2. Note that the token length **must** be exactly **64** characters.
+1. If you do not need to collect HAR log, it is **recommended** to disable browsermob-proxy by changing the configuration in src/sc_config.py file. 
+2. After cloning the repo, it's possible to add/remove/edit the default tokens in src/tokens.py
+3. Note that the token length **must** be exactly **64** characters.
+
 
