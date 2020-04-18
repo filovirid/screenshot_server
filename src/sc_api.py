@@ -9,7 +9,7 @@ import hashlib
 from tokens import get_tokens   #list of valid tokens
 from PIL import Image           #screenshot image file
 import base64                   # encode the output result
-
+import sc_config
 
 # debug_level (False->production,True->development)
 debug_level = False
@@ -131,8 +131,11 @@ class Screenshots(object):
             
     def fetch_screenshot(self,url,user_agent):
         try:
-            bmp = page_content.BMP()
-            prx = bmp.create_proxy()
+            prx = None
+            bmp = None
+            if sc_config.config.get("bmp",1) == 1:
+                bmp = page_content.BMP()
+                prx = bmp.create_proxy()
             if prx != None:
                 bmp.create_har(prx.get("port"))
             pc = page_content.page_content(user_agent)
