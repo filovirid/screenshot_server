@@ -32,8 +32,8 @@ docker container run --rm -it --user screenshot -p 8000:8086 --name scr_server m
 http://localhost:8000/api?url=http://google.com&token=5d6b091416885eaa91283321b69dc526fc42c97783e4cdfdff7a945e3be1f9ef
 ```
 
-#### Configuration
-1. If you do not need to collect HAR log, it is **recommended** to disable browsermob-proxy by changing the configuration in src/sc_config.py file. 
+#### Configuration (read it before using this project!!!).
+1. If you do not need to collect HAR logs, it is **recommended** to disable browsermob-proxy by changing the configuration in src/sc_config.py file. 
 2. After cloning the repo, it's possible to add/remove/edit the default tokens in src/tokens.py
 3. Note that the token length **must** be exactly **64** characters.
 
