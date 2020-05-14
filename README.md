@@ -3,7 +3,6 @@ Ready-to-use server to capture screenshots, HTML source code, HAR logs, page tit
 
 It uses:
 1. Google Chrome browser and driver.
-2. Browsermob-proxy to collect HAR logs.
 3. Python 3 CherryPy framework as web server.
 4. Python 3 Selenium library.
 
@@ -20,7 +19,7 @@ docker build -t myimage .
 ```
 3. After successful installation, run the container.
 ```bash
-docker container run --rm -it --user screenshot -p 8000:8086 --name scr_server myimage
+docker container run --rm -it -d --user screenshot -p 8000:8086 --name scr_server myimage
 ```
 4. Now you can visit http://localhost:8000 to see the API page and documentation.
 5. If you are installing it on a server (e.g., VPS), use server IP address instead of 'localhost'.
@@ -33,7 +32,7 @@ http://localhost:8000/api?url=http://google.com&token=5d6b091416885eaa91283321b6
 ```
 
 #### Configuration (read it before using this project!!!).
-1. If you do not need to collect HAR logs, it is **recommended** to disable browsermob-proxy by changing the configuration in src/sc_config.py file. 
+1. If you do not need to collect HAR logs, it is **recommended** to disable it by changing the configuration in src/sc_config.py file. 
 2. After cloning the repo, it's possible to add/remove/edit the default tokens in src/tokens.py
 3. Note that the token length **must** be exactly **64** characters.
 

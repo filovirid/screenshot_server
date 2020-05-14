@@ -84,7 +84,7 @@ class Screenshots(object):
     #end if
 
     @cherrypy.expose
-    def api(self,url=None,token=None,user_agent = None, *args, **kwargs):
+    def api(self,url=None,token=None,user_agent = None,proxy = None ,*args, **kwargs):
 
         print("**********************")
         print(cherrypy.request.headers)
@@ -99,14 +99,21 @@ class Screenshots(object):
         # check validity of User-Agent
         user_agent = self.sanitize_user_agent(user_agent)
         # check validity of the URL
+        if proxy != None:
+            if not self.sanitize_proxy(proxy):
+                return json.dumps({
+                        'success':False,
+                        'code':502,
+                        'msg':'Wrong proxy format (Must be in a form of IP:PORT)',
+                        'attr':None}).encode('utf-8')   
         if not self.sanitize_url(url):
             return json.dumps({
                         'success':False,
                         'code':502,
-                        'msg':'Wrong URL format (must start with http:// or https:// and no IP address',
+                        'msg':'Wrong URL format (must start with http:// or https:// and no IP address)',
                         'attr':None}).encode('utf-8')
         # everything's fine...let's get screenshot
-        return self.fetch_screenshot(url,user_agent).encode('utf-8')
+        return self.fetch_screenshot(url,user_agent,proxy).encode('utf-8')
     #end def
 
     def sanitize_url(self,url):
@@ -128,18 +135,35 @@ class Screenshots(object):
         if any(result):return False
         return True
     #end def
-            
-    def fetch_screenshot(self,url,user_agent):
+    def sanitize_proxy(self,prx):
+        # check if the proxy has two parts (port:IP)
+        if not isinstance(prx,str):return False
+        if prx.find(":") == -1:return False
+        if len(prx)>21:return False
+        prx = prx.split(":")
+        prx = [x.strip() for x in prx if x.strip() != '']
+        if len(prx) != 2:return False
+        port = None
+        ip = None
         try:
-            prx = None
-            bmp = None
-            if sc_config.config.get("bmp",1) == 1:
-                bmp = page_content.BMP()
-                prx = bmp.create_proxy()
-            if prx != None:
-                bmp.create_har(prx.get("port"))
+            port = int(prx[1])
+            if port > 65535:return False
+            ip = prx[0]
+            if ip.count('.')!= 3:return False
+            valid_char = ['0','1','2','3','4','5','6','7','8','9','.']
+            if not all([True if x in valid_char else False for x in ip]):return False
+            ip = ip.split(".")
+            ip = [int(x) for x in ip]
+            if any([True if x > 255 else False for x in ip]):return False
+            return True
+        except:
+            return False
+    def fetch_screenshot(self,url,user_agent,proxy):
+        try:
+            har = False
+            if sc_config.config.get("HAR",1) == 1:har = True
             pc = page_content.page_content(user_agent)
-            result = pc.selenium_get(url,return_content=False,return_handle=True,headless=True,return_title=False,proxy = prx)
+            result = pc.selenium_get(url,return_content=False,return_handle=True,headless=True,return_title=False,proxy = proxy,return_har = har)
             if result != None and isinstance(result,dict) and result.get("handle",None)!=None:
                 handle = result.get('handle')
                 #wait 6 seconds before taking screenshots
@@ -148,9 +172,13 @@ class Screenshots(object):
                 result = handle.save_screenshot(f_name + '.png')
                 html = handle.page_source
                 title = handle.title
-                har = bmp.get_har(prx.get("port")) if isinstance(prx,dict) else dict()
-                if prx != None:
-                    bmp.close_proxy(prx.get("port"))
+                har_log = []
+                if har:
+                    try:
+                        for entry in handle.get_log('performance'):
+                            har_log.append(entry)
+                    except:
+                        pass
                 destination = handle.current_url
                 if result != False:
                     im = Image.open(f_name + '.png')
@@ -169,7 +197,7 @@ class Screenshots(object):
                                                                     "shot":{'success':True,'data':data},
                                                                     'title':title,
                                                                     'html':html,
-                                                                    'har':har,
+                                                                    'har':har_log,
                                                                     'destination':destination}})
                     except Exception as e:
                         print(e)
@@ -178,7 +206,7 @@ class Screenshots(object):
                                                                     'shot':{'success':False,'data':None},
                                                                     'title':title,
                                                                     'html':html,
-                                                                    'har':har,
+                                                                    'har':har_log,
                                                                     'destination':destination}})
                     #end
                 else:
@@ -187,7 +215,7 @@ class Screenshots(object):
                                                                     'shot':{'success':False,'data':None},
                                                                     'title':title,
                                                                     'html':html,
-                                                                    'har':har,
+                                                                    'har':har_log,
                                                                     'destination':destination}})
             else:
                 return json.dumps({'success':False,'code':503,'msg':'Unknown error1','attr':None})

@@ -76,15 +76,12 @@ pip3 install selenium
 pip3 install tldextract
 pip3 install pillow
 echo "echo 'server is running...' " >> /home/screenshot/.bashrc
-#bmp_prompt="Do you want to install browsermob-proxy to collect HAR log(y/n)? "
-#read -p "$bmp_prompt" bmp_confirm
-#if [ ${#bmp_confirm} -ne 0 ] && [ $bmp_confirm == 'y' ]
-#then
-install_bmp
-apt-get install -y -f default-jre
-chown --recursive screenshot:screenshot /home/screenshot/browsermob_proxy
-echo 'cd /home/screenshot/browsermob_proxy && nohup ./bin/browsermob-proxy -port 8046 &' >> /home/screenshot/.bashrc
-#fi
+# not installing bmp anymore
+#install_bmp
+# remove java installation (not using bmp anymore)
+#apt-get install -y -f default-jre
+#chown --recursive screenshot:screenshot /home/screenshot/browsermob_proxy
+#echo 'cd /home/screenshot/browsermob_proxy && nohup ./bin/browsermob-proxy -port 8046 &' >> /home/screenshot/.bashrc
 echo 'cd /home/screenshot/ && python3 sc_api.py ' >> /home/screenshot/.bashrc
 echo "Done!!!!!"
 echo '***********************************'

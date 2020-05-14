@@ -1,5 +1,6 @@
 from selenium import webdriver                          # selenium webdriver for firefox
 from selenium.webdriver.chrome.options import Options   # just for extra options like headless browser
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities # for performance log
 import tldextract                                       #extract different parts of URLs
 import time                                             # use time.sleep
 import json                                             # parse json
@@ -31,7 +32,8 @@ class page_content():
                 headless = False,
                 return_title = False,
                 screenshot = "",
-                proxy = None):
+                proxy = None,
+                return_har = False):
         """
         Get a URL using selenium library. Probably you need to wait a
         few second for any possible redirection or load of data.
@@ -66,15 +68,23 @@ class page_content():
             options.add_argument("--disable-gpu");
             options.add_argument("--disable-print-preview")
             options.add_argument("--ignore-certificate-errors")
-
-            if isinstance(proxy,dict) and proxy.get('port',None) != None and proxy.get("address",None) != None:
-                options.add_argument("--proxy-server={}:{}".format(proxy.get("address"),proxy.get("port")))
+            caps = None
+            if return_har:
+                caps = DesiredCapabilities.CHROME
+                caps['goog:loggingPrefs'] = {'performance': 'ALL'}
+            if isinstance(proxy,str):
+                proxy_ip = proxy.split(":")[0].strip()
+                proxy_port = proxy.split(":")[1].strip()
+                options.add_argument("--proxy-server={}:{}".format(proxy_ip,proxy_port))
             if  (not url.startswith("http://")) and (not url.startswith("https://")):
                 url = "http://" + url
             result = dict()
             if (headless):
                 options.add_argument("--headless")
-            browser = webdriver.Chrome('chromedriver',chrome_options=options)
+            if return_har:
+                browser = webdriver.Chrome('chromedriver',chrome_options=options,desired_capabilities=caps)
+            else:
+                browser = webdriver.Chrome('chromedriver',chrome_options=options)
             browser.delete_all_cookies() # delete all cookies everytime
             browser.set_window_size(1080,720) # set the screen size
             browser.set_page_load_timeout(60)  # maximum load time to 60 secs
@@ -114,7 +124,7 @@ class page_content():
         pass
     # end def
 
-
+# We are not using browser-mob shit since it's deprecated and memory-hungry
 class BMP():
     """
         Wrapper class for Browsermob-proxy API.
