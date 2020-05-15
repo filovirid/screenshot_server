@@ -19,7 +19,7 @@ docker build -t myimage .
 ```
 3. After successful installation, run the container.
 ```bash
-docker container run --rm -it -d --user screenshot -p 8000:8086 --name scr_server myimage
+docker container run --rm -it -d --user screenshot -p 8000:8086 --name scrshot_container myimage
 ```
 4. Now you can visit http://localhost:8000 to see the API page and documentation.
 5. If you are installing it on a server (e.g., VPS), use server IP address instead of 'localhost'.

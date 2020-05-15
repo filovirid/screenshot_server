@@ -68,6 +68,7 @@ class page_content():
             options.add_argument("--disable-gpu");
             options.add_argument("--disable-print-preview")
             options.add_argument("--ignore-certificate-errors")
+            options.add_argument("--user-agent={}".format(self.user_agent))
             caps = None
             if return_har:
                 caps = DesiredCapabilities.CHROME
