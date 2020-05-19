@@ -13,13 +13,13 @@ It uses:
 git clone https://github.com/filovirid/screenshot_server.git
 cd screenshot_server
 ```
-2. Then use docker command (takes a few minutes to install libraries).
+2. Create docker image and installing dependencies.
 ```bash
-docker build -t myimage .
+./install.sh my_image_123
 ```
 3. After successful installation, run the container.
 ```bash
-docker container run --rm -it -d --user screenshot -p 8000:8086 --name scrshot_container myimage
+docker container run --rm -it -d --user screenshot -p 8000:8086 --name scrshot_container my_image_123
 ```
 4. Now you can visit http://localhost:8000 to see the API page and documentation.
 5. If you are installing it on a server (e.g., VPS), use server IP address instead of 'localhost'.
@@ -35,5 +35,3 @@ http://localhost:8000/api?url=http://google.com&token=5d6b091416885eaa91283321b6
 1. If you do not need to collect HAR logs, it is **recommended** to disable it by changing the configuration in src/sc_config.py file. 
 2. After cloning the repo, it's possible to add/remove/edit the default tokens in src/tokens.py
 3. Note that the token length **must** be exactly **64** characters.
-
-
